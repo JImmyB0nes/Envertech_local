@@ -10,11 +10,8 @@
 
 <p align="center">
   <a href="https://github.com/hacs/integration"><img src="https://img.shields.io/badge/HACS-Custom-41BDF5.svg?logo=homeassistantcommunitystore&logoColor=white" alt="HACS Custom"></a>
-  <a href="https://github.com/jimmybonesde/Envertech_local/releases/latest"><img src="https://img.shields.io/github/v/release/jimmybonesde/Envertech_local?sort=semver" alt="Latest release"></a>
-  <a href="https://github.com/jimmybonesde/Envertech_local/actions/workflows/hassfest.yaml"><img src="https://github.com/jimmybonesde/Envertech_local/actions/workflows/hassfest.yaml/badge.svg" alt="hassfest"></a>
-  <a href="https://github.com/jimmybonesde/Envertech_local/actions/workflows/hacs-validation.yaml"><img src="https://github.com/jimmybonesde/Envertech_local/actions/workflows/hacs-validation.yaml/badge.svg" alt="HACS validation"></a>
-  <a href="https://github.com/jimmybonesde/Envertech_local/actions/workflows/pytest.yaml"><img src="https://github.com/jimmybonesde/Envertech_local/actions/workflows/pytest.yaml/badge.svg" alt="Python tests"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/jimmybonesde/Envertech_local" alt="License: MIT"></a>
+  <a href="https://github.com/JImmyB0nes/Envertech_local/releases/latest"><img src="https://img.shields.io/github/v/release/JImmyB0nes/Envertech_local?sort=semver" alt="Latest release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/JImmyB0nes/Envertech_local" alt="License: MIT"></a>
 </p>
 
 <p align="center">
@@ -28,7 +25,7 @@
 
 > **Envertech Local** (integration domain `envertech_local`) reads live data straight from your Envertech inverter/gateway on your local network. You don't need a cloud account, and nothing leaves your LAN.
 
-This fork is maintained by [JimmyBones](https://github.com/jimmybonesde). It is based on [Kaiserdragon2/Envertech_local](https://github.com/Kaiserdragon2/Envertech_local).
+This fork is maintained by [JimmyBones](https://github.com/JImmyB0nes). It is based on [Kaiserdragon2/Envertech_local](https://github.com/Kaiserdragon2/Envertech_local).
 
 ---
 
@@ -47,17 +44,17 @@ This fork is maintained by [JimmyBones](https://github.com/jimmybonesde). It is 
 
 ### HACS (recommended)
 
-The integration is part of the official [HACS default catalog](https://github.com/hacs/default).
+This integration is not (yet) in the official HACS default catalog, so add it as a custom repository:
 
-[![Open HACS and install this integration.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=jimmybonesde&repository=Envertech_local&category=integration)
+[![Add this integration as a HACS custom repository.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=JImmyB0nes&repository=Envertech_local&category=integration)
 
-1. In Home Assistant, open **HACS** and search for **Envertech Local**.
-2. Click **Download** and wait for the installation to finish.
+1. In HACS, go to **Integrations → ⋮ → Custom repositories** and add `https://github.com/JImmyB0nes/Envertech_local` (category: *Integration*).
+2. Search for **Envertech Local**, click **Download** and wait for the installation to finish.
 3. **Restart** Home Assistant.
 
 ### Manual
 
-1. Download the [latest release](https://github.com/jimmybonesde/Envertech_local/releases/latest).
+1. Download the [latest release](https://github.com/JImmyB0nes/Envertech_local/releases/latest).
 2. Copy `custom_components/envertech_local` into `<config>/custom_components/` of your Home Assistant installation.
 3. **Restart** Home Assistant.
 
@@ -147,13 +144,13 @@ Versions **≤ 1.1.1** could end up without values after a restart:
 - If the inverter wasn't reachable within 60 seconds of startup, for example at night or because the network wasn't up yet, the sensors were never created.
 - A dropped or silent TCP connection was never re-established.
 
-This is fixed in **1.1.2** ([PR #8](https://github.com/jimmybonesde/Envertech_local/pull/8), available once released):
+This is fixed in **1.1.2** ([PR #8](https://github.com/Kaiserdragon2/Envertech_local/pull/8)):
 
 - The connection now reconnects automatically with backoff (5 s up to 2 min).
 - Sensors are created immediately and stay `unavailable` until data arrives.
 - New panels are added as soon as they report.
 
-Update to the latest version. If it still happens, please enable debug logging (see below) and open an issue.
+Update to the latest version. If it still happens, please enable debug logging (see below) and open an issue [here](https://github.com/JImmyB0nes/Envertech_local/issues) or upstream.
 </details>
 
 <details>
@@ -196,21 +193,21 @@ You can also use **Settings → Devices & services → Envertech Local → ⋮ �
 
 This integration supports Envertech micro-inverters and gateways with a local TCP interface on port `14889`, for example devices of the **EMT series**. It is designed for systems with multiple panels.
 
-Does your model not work, or does it report different data? Please [open an issue](https://github.com/jimmybonesde/Envertech_local/issues) and include the model, the firmware version and, if possible, anonymized debug logs.
+Does your model not work, or does it report different data? Please [open an issue](https://github.com/JImmyB0nes/Envertech_local/issues) and include the model, the firmware version and, if possible, anonymized debug logs.
 
 ## 🤝 Contributing
 
 Bug reports, ideas and pull requests are welcome:
 
-- 🐛 [Report an issue](https://github.com/jimmybonesde/Envertech_local/issues)
-- 🔀 [Open a pull request](https://github.com/jimmybonesde/Envertech_local/pulls)
-- ✅ Run the unit tests locally with `pip install pytest && pytest -q` (no Home Assistant needed)
+- 🐛 [Report an issue](https://github.com/JImmyB0nes/Envertech_local/issues)
+- 🔀 [Open a pull request](https://github.com/JImmyB0nes/Envertech_local/pulls)
+- ✅ Run the unit tests locally with `pip install pytest && pytest -q` (no Home Assistant needed; CI does not run in this repository)
 - ⭐ Star the repository if you find it useful
 
 ## 🙏 Credits & license
 
 - Original integration: [Kaiserdragon2/Envertech_local](https://github.com/Kaiserdragon2/Envertech_local), including the [`envertech-local`](https://pypi.org/project/envertech-local/) protocol library
-- Maintenance and development: **JimmyBones** ([@jimmybonesde](https://github.com/jimmybonesde))
+- Maintenance and development: **JimmyBones** ([@JImmyB0nes](https://github.com/JImmyB0nes))
 - Polish translation: [@vaGpl](https://github.com/vaGpl)
 
 Released under the [MIT License](LICENSE).
