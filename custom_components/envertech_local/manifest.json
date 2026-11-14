@@ -1,14 +1,14 @@
 {
   "domain": "envertech_local",
   "name": "Envertech Local",
-  "codeowners": ["@jimmybonesde"],
+  "codeowners": ["@JImmyB0nes"],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://github.com/jimmybonesde/Envertech_local",
+  "documentation": "https://github.com/JImmyB0nes/Envertech_local",
   "integration_type": "device",
   "iot_class": "local_polling",
-  "issue_tracker": "https://github.com/jimmybonesde/Envertech_local/issues",
+  "issue_tracker": "https://github.com/JImmyB0nes/Envertech_local/issues",
   "loggers": ["custom_components.envertech_local", "envertech_local"],
   "requirements": ["envertech-local==0.0.2"],
-  "version": "1.3.5"
+  "version": "1.3.6"
 }
