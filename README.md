@@ -44,7 +44,7 @@ This fork is maintained by [JimmyBones](https://github.com/JImmyB0nes). It is ba
 
 ### HACS (recommended)
 
-This integration is not (yet) in the official HACS default catalog, so add it as a custom repository:
+The HACS default listing still points to the old `jimmybonesde/Envertech_local` address while the move to this repository is processed. Until then, add it as a custom repository:
 
 [![Add this integration as a HACS custom repository.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=JImmyB0nes&repository=Envertech_local&category=integration)
 
