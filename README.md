@@ -12,6 +12,7 @@
   <a href="https://github.com/hacs/integration"><img src="https://img.shields.io/badge/HACS-Custom-41BDF5.svg?logo=homeassistantcommunitystore&logoColor=white" alt="HACS Custom"></a>
   <a href="https://github.com/JImmyB0nes/Envertech_local/releases/latest"><img src="https://img.shields.io/github/v/release/JImmyB0nes/Envertech_local?sort=semver" alt="Latest release"></a>
   <a href="https://github.com/JImmyB0nes/Envertech_local/releases/latest/download/envertech_local.zip"><img src="https://img.shields.io/github/downloads/JImmyB0nes/Envertech_local/total?color=green" alt="Downloads"></a>
+  <a href="https://git.jimmybones.de/jimmybones/Envertech_local"><img src="https://img.shields.io/badge/mirror-forgejo-blue?logo=forgejo" alt="Forgejo mirror"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/JImmyB0nes/Envertech_local" alt="License: MIT"></a>
 </p>
 
