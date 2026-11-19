@@ -4,6 +4,30 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.9] - 2026-11-19
+
+### Fixed
+
+- **Config flow still answered `500 Internal Server Error` on Home Assistant
+  2026.11.** The forms used plain Python functions (`_validate_port`,
+  `_validate_ip`) as schema validators. Home Assistant 2026.11 serialises every
+  form schema for the frontend and rejects such functions with
+  `ValueError: unable to serialize schema: <function _validate_port ...>`.
+  This code was unchanged since before 1.3.4, so earlier releases were affected
+  too on current Home Assistant; 1.3.7 and 1.3.8 fixed real but different bugs
+  that hit the same error page. The port now uses
+  `vol.All(vol.Coerce(int), vol.Range(min=1, max=65535))`, the IP address is a
+  plain `str` field validated inside the step (new `invalid_ip` /
+  `invalid_serial` errors, translated in en/de/pl).
+  Fixes [#4](https://github.com/JImmyB0nes/Envertech_local/issues/4) and
+  [#5](https://github.com/JImmyB0nes/Envertech_local/issues/5).
+- Discovery ran again on every form submit, adding up to 5 s and failing with
+  `cannot_connect` when the inverter missed the second broadcast. It now runs
+  once when the form is shown and the result is reused on submit.
+- Added `tests/test_config_flow_schema.py`: opens every config/options form and
+  serialises its schema with `voluptuous_serialize`, so a non-serialisable
+  validator fails CI instead of the user's setup.
+
 ## [1.3.8] - 2026-11-19
 
 ### Fixed

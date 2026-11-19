@@ -20,7 +20,9 @@
       }
     },
     "error": {
-      "cannot_connect": "Verbindung zum gewählten Wechselrichter fehlgeschlagen"
+      "cannot_connect": "Verbindung zum gewählten Wechselrichter fehlgeschlagen",
+      "invalid_ip": "Keine gültige IPv4-Adresse",
+      "invalid_serial": "Seriennummer darf nicht leer sein"
     },
     "abort": {
       "already_configured": "Dieser Wechselrichter ist bereits eingerichtet"
