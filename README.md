@@ -69,7 +69,7 @@ The integration is set up entirely in the UI through a config flow:
 [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=envertech_local)
 
 1. Go to **Settings → Devices & services → Add integration** and choose **Envertech Local**.
-2. **Discovery:** the integration spends about 5 seconds searching your network for inverters. It sends UDP broadcasts on ports `48889` (Ethernet/LOCALCON) and `48899` (Wi-Fi). Every inverter it finds is listed as `IP — serial number`, except those already set up.
+2. **Discovery:** the integration spends about 5 seconds searching your network for inverters. It sends UDP broadcasts on ports `48889` (Ethernet/LOCALCON) and `48899` (Wi-Fi) from every network adapter enabled under **Settings → System → Network**. Every inverter it finds is listed as `IP — serial number`, except those already set up.
 3. Pick your inverter and check the **TCP port** (default `14889`).
 4. If nothing is found, choose **Manual entry** and enter:
    - **IP address** of the inverter/gateway
@@ -150,7 +150,7 @@ import error that surfaced as `500 Internal Server Error`.
 
 **Fixed in 1.3.7**: the integration no longer has any third-party dependency.
 Protocol handling and discovery are implemented with the standard library only,
-so nothing needs to be compiled on the target system. Update to 1.3.9 or newer.
+so nothing needs to be compiled on the target system. Update to 1.3.10 or newer.
 
 A second, separate cause was reported for the same symptom: in 1.3.7 the config
 flow read `DISCOVERY_TIMEOUT` without importing it, so the first step raised

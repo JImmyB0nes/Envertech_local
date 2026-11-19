@@ -69,6 +69,17 @@ def _install_ha_stubs(monkeypatch: pytest.MonkeyPatch) -> None:
     const.CONF_UNIQUE_ID = "unique_id"
     data_entry_flow = types.ModuleType("homeassistant.data_entry_flow")
     data_entry_flow.FlowResult = dict
+    components = types.ModuleType("homeassistant.components")
+    network = types.ModuleType("homeassistant.components.network")
+
+    async def async_get_adapters(hass):
+        return [
+            {"enabled": True, "ipv4": [{"address": "192.168.1.2", "network_prefix": 24}]},
+            {"enabled": False, "ipv4": [{"address": "10.9.9.9", "network_prefix": 8}]},
+        ]
+
+    network.async_get_adapters = async_get_adapters
+    components.network = network
     core = types.ModuleType("homeassistant.core")
     core.callback = lambda func: func
     ha.config_entries = config_entries
@@ -78,6 +89,8 @@ def _install_ha_stubs(monkeypatch: pytest.MonkeyPatch) -> None:
         "homeassistant.const": const,
         "homeassistant.data_entry_flow": data_entry_flow,
         "homeassistant.core": core,
+        "homeassistant.components": components,
+        "homeassistant.components.network": network,
     }.items():
         monkeypatch.setitem(sys.modules, name, mod)
 
@@ -108,8 +121,9 @@ def _load_config_flow(monkeypatch: pytest.MonkeyPatch, devices: list[dict]):
 
     calls = {"n": 0}
 
-    async def fake_discover(timeout: float) -> list[dict]:
+    async def fake_discover(timeout: float, source_ips=None) -> list[dict]:
         calls["n"] += 1
+        calls["source_ips"] = source_ips
         return list(devices)
 
     monkeypatch.setattr(module, "discover_devices", fake_discover)
@@ -180,6 +194,8 @@ def test_submit_uses_cached_discovery(monkeypatch: pytest.MonkeyPatch) -> None:
 
     result = asyncio.run(run())
     assert calls["n"] == 1
+    # Only enabled adapters from HA's network settings are used.
+    assert calls["source_ips"] == ["192.168.1.2"]
     assert result["type"] == "create_entry"
     assert result["data"]["unique_id"] == DEVICE["serial_number"]
 

@@ -88,7 +88,7 @@ def test_discover_devices_deduplicates_across_ports(monkeypatch) -> None:
     serial = {"AABBCCDD"}
     calls: list[int] = []
 
-    async def fake(msg, port, decoder, timeout, loop, dest_address):
+    async def fake(msg, port, decoder, timeout, loop, dest_address, source_ip="0.0.0.0"):
         calls.append(port)
         if port == discovery.DEST_PORTS["localcon"]:
             return [
@@ -128,7 +128,7 @@ def test_discover_devices_returns_empty_list_without_replies() -> None:
 def test_discover_devices_survives_a_failing_port(monkeypatch) -> None:
     """A crashing port must not break the flow - manual entry stays available."""
 
-    async def boom(msg, port, decoder, timeout, loop, dest_address):
+    async def boom(msg, port, decoder, timeout, loop, dest_address, source_ip="0.0.0.0"):
         raise OSError("Host unreachable")
 
     monkeypatch.setattr(discovery, "_discover_on_port", boom)
@@ -163,3 +163,61 @@ def test_bad_replies_are_ignored_not_fatal() -> None:
         return found
 
     assert asyncio.run(asyncio.wait_for(main(), 5)) == []
+
+
+def test_discover_devices_broadcasts_from_every_source_ip(monkeypatch) -> None:
+    """One broadcast per local address and port, like the original library."""
+    calls: list[tuple[str, int]] = []
+
+    async def fake(msg, port, decoder, timeout, loop, dest_address, source_ip="0.0.0.0"):
+        calls.append((source_ip, port))
+        return [{"ip": source_ip, "serial_number": f"SN-{source_ip}", "mac": None}]
+
+    monkeypatch.setattr(discovery, "_discover_on_port", fake)
+    devices = asyncio.run(
+        discovery.discover_devices(
+            timeout=0.1,
+            source_ips=["192.168.1.10", "10.0.0.5", "127.0.0.1", "192.168.1.10"],
+        )
+    )
+    ports = sorted(discovery.DEST_PORTS.values())
+    assert sorted(calls) == sorted(
+        (ip, port) for ip in ("192.168.1.10", "10.0.0.5") for port in ports
+    )
+    assert {d["serial_number"] for d in devices} == {"SN-192.168.1.10", "SN-10.0.0.5"}
+
+
+def test_discover_devices_without_sources_uses_default_route(monkeypatch) -> None:
+    calls: list[str] = []
+
+    async def fake(msg, port, decoder, timeout, loop, dest_address, source_ip="0.0.0.0"):
+        calls.append(source_ip)
+        return []
+
+    monkeypatch.setattr(discovery, "_discover_on_port", fake)
+    asyncio.run(discovery.discover_devices(timeout=0.1, source_ips=["127.0.0.1"]))
+    assert calls == ["0.0.0.0", "0.0.0.0"]
+
+
+def test_discover_on_port_binds_to_source_ip() -> None:
+    """A real loopback round trip with an explicit source address."""
+
+    async def main() -> list[dict[str, object]]:
+        peer = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        peer.bind(("127.0.0.1", 0))
+        peer.setblocking(False)
+        reply = bytes([10, 0, 0, 9, 0, 0, 0x11, 0x22, 0x33, 0x44])
+        loop = asyncio.get_running_loop()
+        found = await asyncio.gather(
+            discovery._discover_on_port(
+                discovery.UDP_DISCOVERY_MSG, peer.getsockname()[1],
+                discovery.decode_localcon_response, 0.4, loop, "127.0.0.1",
+                source_ip="127.0.0.1",
+            ),
+            _responder(peer, loop, reply),
+        )
+        peer.close()
+        return found[0]
+
+    devices = asyncio.run(asyncio.wait_for(main(), 5))
+    assert [d["serial_number"] for d in devices] == ["11223344"]

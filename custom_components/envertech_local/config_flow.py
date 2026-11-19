@@ -7,6 +7,7 @@ import logging
 
 import voluptuous as vol
 from homeassistant import config_entries
+from homeassistant.components import network
 from homeassistant.const import CONF_IP_ADDRESS, CONF_PORT, CONF_UNIQUE_ID
 from homeassistant.data_entry_flow import FlowResult
 
@@ -67,6 +68,21 @@ def _validate_ip(value: str) -> str:
 PORT_VALIDATOR = vol.All(vol.Coerce(int), vol.Range(min=1, max=65535))
 
 
+async def _async_source_ips(hass) -> list[str]:
+    """IPv4 addresses of the adapters enabled in Home Assistant's network settings."""
+    try:
+        adapters = await network.async_get_adapters(hass)
+    except Exception:  # fall back to the default route
+        _LOGGER.debug("Could not read network adapters", exc_info=True)
+        return []
+    return [
+        address["address"]
+        for adapter in adapters
+        if adapter.get("enabled")
+        for address in adapter.get("ipv4", [])
+    ]
+
+
 class InverterMonitorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Envertech Local."""
 
@@ -93,7 +109,8 @@ class InverterMonitorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is None:
             try:
                 self.discovered_devices = await discover_devices(
-                    timeout=DISCOVERY_TIMEOUT
+                    timeout=DISCOVERY_TIMEOUT,
+                    source_ips=await _async_source_ips(self.hass),
                 )
             except Exception:
                 _LOGGER.exception("Device discovery failed")
