@@ -20,7 +20,9 @@
       }
     },
     "error": {
-      "cannot_connect": "Could not connect to the selected inverter"
+      "cannot_connect": "Could not connect to the selected inverter",
+      "invalid_ip": "Not a valid IPv4 address",
+      "invalid_serial": "Serial number must not be empty"
     },
     "abort": {
       "already_configured": "This inverter is already configured"
