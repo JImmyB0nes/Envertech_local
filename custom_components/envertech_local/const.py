@@ -14,3 +14,7 @@ DEFAULT_PORT = 14889
 CONF_POLL_INTERVAL = "poll_interval"
 DEFAULT_POLL_INTERVAL = 5
 POLL_INTERVAL_CHOICES = (5, 10, 30)
+
+# Seconds the config flow waits for UDP discovery replies before showing the
+# form (and the manual-entry fallback).
+DISCOVERY_TIMEOUT = 5.0

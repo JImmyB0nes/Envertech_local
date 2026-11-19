@@ -139,6 +139,22 @@ Use *Total energy* rather than the daily/monthly/yearly sensors. The Energy Dash
 ## 🛠️ Troubleshooting
 
 <details>
+<summary><strong>Setup fails with “500 Internal Server Error / Der Konfigurationsfluss konnte nicht geladen werden”</strong></summary>
+
+Versions **≤ 1.3.6** depended on the `envertech-local` library, which pulls in
+[`netifaces`](https://pypi.org/project/netifaces/) for device discovery. That C
+extension was last released in 2021, ships wheels only up to CPython 3.9 and
+still imports `distutils` (removed in Python 3.12). On current Home Assistant OS
+releases it therefore cannot be installed, and opening the config flow raised an
+import error that surfaced as `500 Internal Server Error`.
+
+**Fixed in 1.3.7**: the integration no longer has any third-party dependency.
+Protocol handling and discovery are implemented with the standard library only,
+so nothing needs to be compiled on the target system. Update to 1.3.7 or newer.
+
+</details>
+
+<details>
 <summary><strong>No values after a Home Assistant restart (only a reload helped)</strong></summary>
 
 Versions **≤ 1.1.1** could end up without values after a restart:
@@ -208,7 +224,7 @@ Bug reports, ideas and pull requests are welcome:
 
 ## 🙏 Credits & license
 
-- Original integration: [Kaiserdragon2/Envertech_local](https://github.com/Kaiserdragon2/Envertech_local), including the [`envertech-local`](https://pypi.org/project/envertech-local/) protocol library
+- Original integration: [Kaiserdragon2/Envertech_local](https://github.com/Kaiserdragon2/Envertech_local), and the [`envertech-local`](https://pypi.org/project/envertech-local/) protocol library whose frame format and scaling factors this integration reimplements without third-party dependencies
 - Maintenance and development: **JimmyBones** ([@JImmyB0nes](https://github.com/JImmyB0nes))
 - Polish translation: [@vaGpl](https://github.com/vaGpl)
 

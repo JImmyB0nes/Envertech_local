@@ -6,7 +6,6 @@ import ipaddress
 import logging
 
 import voluptuous as vol
-from envertech_local import discover_devices_async
 from homeassistant import config_entries
 from homeassistant.const import CONF_IP_ADDRESS, CONF_PORT, CONF_UNIQUE_ID
 from homeassistant.data_entry_flow import FlowResult
@@ -19,6 +18,7 @@ from .const import (
     POLL_INTERVAL_CHOICES,
     DOMAIN,
 )
+from .discovery import discover_devices
 from homeassistant.core import callback
 
 _LOGGER = logging.getLogger(__name__)
@@ -87,7 +87,7 @@ class InverterMonitorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
 
         try:
-            self.discovered_devices = await discover_devices_async(timeout=5)
+            self.discovered_devices = await discover_devices(timeout=DISCOVERY_TIMEOUT)
         except Exception:
             _LOGGER.exception("Device discovery failed")
             self.discovered_devices = []

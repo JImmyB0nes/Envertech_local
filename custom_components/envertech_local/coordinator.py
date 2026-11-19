@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
@@ -12,6 +12,11 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import dt as dt_util
 
 from .panels import panel_indices
+from .protocol import (
+    build_inverter_break_command,
+    build_inverter_request,
+    parse_inverter_response,
+)
 from .stream import run_with_reconnect, stream_inverter
 from .const import CONF_POLL_INTERVAL, DEFAULT_POLL_INTERVAL
 
@@ -26,11 +31,13 @@ class InverterSocketCoordinator(DataUpdateCoordinator[dict]):
     """Keep a TCP stream to the inverter alive and push updates to entities."""
 
     def __init__(self, hass: HomeAssistant, ip: str, port: int, sn: str) -> None:
+        # No polling: the stream pushes updates as soon as a packet arrives,
+        # so a periodic refresh would only add wakeups without new data.
         super().__init__(
             hass,
             _LOGGER,
             name=f"envertech_local_{sn}",
-            update_interval=timedelta(seconds=30),
+            update_interval=None,
         )
         self.ip = ip
         self.port = port
@@ -103,21 +110,13 @@ class InverterSocketCoordinator(DataUpdateCoordinator[dict]):
             await parent_shutdown()
 
     def _open_stream(self):
-        # Imported lazily: the library pulls in netifaces for discovery.
-        from envertech_local import (
-            InverterClient,
-            build_inverter_break_command,
-            build_inverter_request,
-        )
-
-        parser = InverterClient(self.ip, self.port, self.sn)
         return stream_inverter(
             self.ip,
             self.port,
             self.sn,
             build_request=build_inverter_request,
             build_break=build_inverter_break_command,
-            parse=parser.parse_data,
+            parse=parse_inverter_response,
             interval=self.poll_interval,
         )
 

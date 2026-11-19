@@ -9,9 +9,9 @@ problems that break the integration after a Home Assistant restart:
   10 seconds, so no reconnect ever happens,
 * ``open_connection`` has no timeout.
 
-This module re-implements the stream using the library's command builders and
-parser (injected as callables so it can be unit tested without the library or
-Home Assistant) and adds a supervisor with exponential reconnect backoff.
+This module re-implements the stream using the command builders and parser from
+:mod:`.protocol` (injected as callables so it can be unit tested without Home
+Assistant) and adds a supervisor with exponential reconnect backoff.
 """
 
 from __future__ import annotations

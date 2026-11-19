@@ -40,7 +40,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # stream reconnects on its own (with backoff) if the inverter is not
     # reachable yet, e.g. right after a Home Assistant restart.
     coordinator.async_start(entry)
-    entry.add_update_listener(_async_update_listener)
+    # Unregister on unload, otherwise every reload stacks another listener and
+    # the stale one hits hass.data after the entry was removed.
+    entry.async_on_unload(entry.add_update_listener(_async_update_listener))
     return True
 
 
