@@ -150,12 +150,19 @@ import error that surfaced as `500 Internal Server Error`.
 
 **Fixed in 1.3.7**: the integration no longer has any third-party dependency.
 Protocol handling and discovery are implemented with the standard library only,
-so nothing needs to be compiled on the target system. Update to 1.3.8 or newer.
+so nothing needs to be compiled on the target system. Update to 1.3.9 or newer.
 
 A second, separate cause was reported for the same symptom: in 1.3.7 the config
 flow read `DISCOVERY_TIMEOUT` without importing it, so the first step raised
 `NameError` and Home Assistant again answered 500. Fixed in **1.3.8**, and a
 regression test now fails if any module uses a constant it never imports.
+
+The third and underlying cause, present in every release up to 1.3.8: the setup
+forms used plain Python functions as validators. Home Assistant 2026.11 rejects
+those when it sends the form to the browser
+(`ValueError: unable to serialize schema: <function _validate_port ...>` in the
+log). Fixed in **1.3.9**; every form schema is now checked by a test. After
+updating, restart Home Assistant.
 
 </details>
 

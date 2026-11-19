@@ -60,11 +60,11 @@ def _validate_ip(value: str) -> str:
         raise vol.Invalid("Not a valid IPv4 address") from exc
 
 
-def _validate_port(value: int) -> int:
-    """Validate a TCP port number."""
-    if not 1 <= value <= 65535:
-        raise vol.Invalid("Port must be between 1 and 65535")
-    return value
+# Schema validators must be built from voluptuous primitives only. Home
+# Assistant serialises ``data_schema`` for the frontend and raises
+# ``ValueError: unable to serialize schema`` on any plain Python function,
+# which surfaces as "500 Internal Server Error" when the flow is opened.
+PORT_VALIDATOR = vol.All(vol.Coerce(int), vol.Range(min=1, max=65535))
 
 
 class InverterMonitorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -87,11 +87,17 @@ class InverterMonitorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle the initial step with discovery."""
         errors: dict[str, str] = {}
 
-        try:
-            self.discovered_devices = await discover_devices(timeout=DISCOVERY_TIMEOUT)
-        except Exception:
-            _LOGGER.exception("Device discovery failed")
-            self.discovered_devices = []
+        # Discover only when the form is first shown. Re-running discovery on
+        # submit would delay the answer and fail with "cannot_connect" whenever
+        # the inverter misses the second broadcast.
+        if user_input is None:
+            try:
+                self.discovered_devices = await discover_devices(
+                    timeout=DISCOVERY_TIMEOUT
+                )
+            except Exception:
+                _LOGGER.exception("Device discovery failed")
+                self.discovered_devices = []
 
         existing_entries = self.hass.config_entries.async_entries(DOMAIN)
         existing_ids = {
@@ -138,7 +144,7 @@ class InverterMonitorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema(
                 {
                     vol.Required(CONF_IP_ADDRESS): vol.In(device_choices),
-                    vol.Required(CONF_PORT, default=DEFAULT_PORT): _validate_port,
+                    vol.Required(CONF_PORT, default=DEFAULT_PORT): PORT_VALIDATOR,
                 }
             ),
             errors=errors,
@@ -157,24 +163,39 @@ class InverterMonitorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             sn = user_input[CONF_UNIQUE_ID].strip()
-            await self.async_set_unique_id(sn)
-            self._abort_if_unique_id_configured()
-            return self.async_create_entry(
-                title=f"{INTEGRATION_NAME} {sn}",
-                data={
-                    CONF_IP_ADDRESS: user_input[CONF_IP_ADDRESS].strip(),
-                    CONF_UNIQUE_ID: sn,
-                    CONF_PORT: user_input[CONF_PORT],
-                },
-            )
+            try:
+                ip_address = _validate_ip(user_input[CONF_IP_ADDRESS])
+            except vol.Invalid:
+                errors[CONF_IP_ADDRESS] = "invalid_ip"
+            else:
+                if not sn:
+                    errors[CONF_UNIQUE_ID] = "invalid_serial"
+                else:
+                    await self.async_set_unique_id(sn)
+                    self._abort_if_unique_id_configured()
+                    return self.async_create_entry(
+                        title=f"{INTEGRATION_NAME} {sn}",
+                        data={
+                            CONF_IP_ADDRESS: ip_address,
+                            CONF_UNIQUE_ID: sn,
+                            CONF_PORT: user_input[CONF_PORT],
+                        },
+                    )
 
+        defaults = user_input or {}
         return self.async_show_form(
             step_id="manual",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_IP_ADDRESS): _validate_ip,
-                    vol.Required(CONF_UNIQUE_ID): str,
-                    vol.Required(CONF_PORT, default=DEFAULT_PORT): _validate_port,
+                    vol.Required(
+                        CONF_IP_ADDRESS, default=defaults.get(CONF_IP_ADDRESS, vol.UNDEFINED)
+                    ): str,
+                    vol.Required(
+                        CONF_UNIQUE_ID, default=defaults.get(CONF_UNIQUE_ID, vol.UNDEFINED)
+                    ): str,
+                    vol.Required(
+                        CONF_PORT, default=defaults.get(CONF_PORT, DEFAULT_PORT)
+                    ): PORT_VALIDATOR,
                 }
             ),
             errors=errors,

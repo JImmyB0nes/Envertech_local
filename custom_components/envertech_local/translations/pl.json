@@ -20,7 +20,9 @@
       }
     },
     "error": {
-      "cannot_connect": "Nie można połączyć się z wybranym falownikiem"
+      "cannot_connect": "Nie można połączyć się z wybranym falownikiem",
+      "invalid_ip": "Nieprawidłowy adres IPv4",
+      "invalid_serial": "Numer seryjny nie może być pusty"
     },
     "abort": {
       "already_configured": "Ten falownik jest już skonfigurowany"
