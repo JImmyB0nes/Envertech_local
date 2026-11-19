@@ -4,6 +4,26 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.10] - 2026-11-19
+
+### Fixed
+
+- **Discovery only searched the network behind the default route.** Up to 1.3.6
+  the `envertech-local` library broadcast from every local IPv4 address; the
+  stdlib rewrite in 1.3.7 sent a single broadcast, so inverters on a second
+  network/VLAN that Home Assistant is attached to were no longer found. The
+  broadcast is again sent from every address, taken from Home Assistant's
+  `network` integration (only adapters enabled under *Settings → System →
+  Network*). Without any, the default route is used as before.
+- **Deprecation warning on Home Assistant 2026.8+:** `sensor.py` used
+  `device_registry.async_get_device()`, which logs a warning and stops working
+  in Home Assistant 2027.8. It now uses `async_get_device_by_identifier()` when
+  available and falls back to `async_get_device()` on older releases.
+
+### Changed
+
+- `manifest.json`: `dependencies` now lists `network`.
+
 ## [1.3.9] - 2026-11-19
 
 ### Fixed

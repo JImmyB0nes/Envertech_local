@@ -11,10 +11,15 @@ discovery ports and collecting the replies:
 * ``48889`` - Ethernet/LOCALCON gateways, binary reply
 * ``48899`` - Wi-Fi modules, comma separated text reply
 
-Broadcasting from an unbound socket lets the kernel replicate the datagram to
-every interface that has a broadcast-capable IPv4 address, which covers the
-common single-subnet Home Assistant installation. Broadcasts do not cross
-routers, so devices on other VLANs/subnets still need manual entry.
+Like the original library, one socket is bound per local IPv4 address and the
+broadcast is sent from each of them. On Linux a limited broadcast
+(255.255.255.255) leaves through the interface that owns the bound source
+address, so every network Home Assistant is attached to is searched - not only
+the one behind the default route. The caller passes the addresses (the config
+flow takes them from Home Assistant's ``network`` integration, which honours
+the user's adapter selection); without any, a single socket on the default
+route is used. Broadcasts do not cross routers, so devices on other routed
+subnets still need manual entry.
 """
 
 from __future__ import annotations
@@ -75,8 +80,9 @@ async def _discover_on_port(
     timeout: float,
     loop: asyncio.AbstractEventLoop,
     dest_address: str = BROADCAST_ADDRESS,
+    source_ip: str = "0.0.0.0",
 ) -> list[dict[str, object]]:
-    """Broadcast on one port and collect the distinct replies."""
+    """Broadcast on one port from ``source_ip`` and collect the distinct replies."""
     found: list[dict[str, object]] = []
     seen: set[str] = set()
 
@@ -84,9 +90,11 @@ async def _discover_on_port(
     sock.setblocking(False)
     try:
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        sock.bind(("0.0.0.0", 0))
+        sock.bind((source_ip, 0))
         sock.sendto(msg, (dest_address, dest_port))
-        _LOGGER.debug("Sent %r to %s:%s", msg, dest_address, dest_port)
+        _LOGGER.debug(
+            "Sent %r from %s to %s:%s", msg, source_ip, dest_address, dest_port
+        )
 
         end_time = loop.time() + timeout
         while True:
@@ -123,18 +131,30 @@ async def _discover_on_port(
 
 
 async def discover_devices(
-    timeout: float = DEFAULT_TIMEOUT, dest_address: str = BROADCAST_ADDRESS
+    timeout: float = DEFAULT_TIMEOUT,
+    dest_address: str = BROADCAST_ADDRESS,
+    source_ips: list[str] | None = None,
 ) -> list[dict[str, object]]:
     """Return the inverters/gateways found on the local network.
 
-    Never raises for a single failing port, so the config flow can always show
-    the manual-entry fallback.
+    ``source_ips`` are the local IPv4 addresses to broadcast from (one socket
+    per address and port). Loopback addresses are skipped. Without any usable
+    address the broadcast goes out through the default route.
+
+    Never raises for a single failing port or address, so the config flow can
+    always show the manual-entry fallback.
     """
     loop = asyncio.get_running_loop()
+    sources = [
+        ip for ip in dict.fromkeys(source_ips or []) if not ip.startswith("127.")
+    ] or ["0.0.0.0"]
     tasks = [
         asyncio.create_task(
-            _discover_on_port(msg, port, decoder, timeout, loop, dest_address)
+            _discover_on_port(
+                msg, port, decoder, timeout, loop, dest_address, source_ip=source
+            )
         )
+        for source in sources
         for msg, port, decoder in (
             (UDP_DISCOVERY_MSG, DEST_PORTS["localcon"], decode_localcon_response),
             (UDP_DISCOVERY_MSG_WIFI, DEST_PORTS["wifi"], decode_wifi_response),
