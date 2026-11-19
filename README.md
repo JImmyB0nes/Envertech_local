@@ -150,7 +150,12 @@ import error that surfaced as `500 Internal Server Error`.
 
 **Fixed in 1.3.7**: the integration no longer has any third-party dependency.
 Protocol handling and discovery are implemented with the standard library only,
-so nothing needs to be compiled on the target system. Update to 1.3.7 or newer.
+so nothing needs to be compiled on the target system. Update to 1.3.8 or newer.
+
+A second, separate cause was reported for the same symptom: in 1.3.7 the config
+flow read `DISCOVERY_TIMEOUT` without importing it, so the first step raised
+`NameError` and Home Assistant again answered 500. Fixed in **1.3.8**, and a
+regression test now fails if any module uses a constant it never imports.
 
 </details>
 
