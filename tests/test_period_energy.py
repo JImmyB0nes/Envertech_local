@@ -15,7 +15,7 @@ import pytest
 _MODULE_PATH = (
     Path(__file__).resolve().parents[1]
     / "custom_components"
-    / "envertech_local"
+    / "envertech_inverter"
     / "period_energy.py"
 )
 _SPEC = importlib.util.spec_from_file_location("period_energy", _MODULE_PATH)

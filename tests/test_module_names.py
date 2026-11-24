@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-_PKG = Path(__file__).resolve().parents[1] / "custom_components" / "envertech_local"
+_PKG = Path(__file__).resolve().parents[1] / "custom_components" / "envertech_inverter"
 _MODULES = sorted(_PKG.glob("*.py"))
 
 

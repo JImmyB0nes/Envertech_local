@@ -14,7 +14,7 @@ from pathlib import Path
 
 from tests._loader import load
 
-_PKG = Path(__file__).resolve().parents[1] / "custom_components" / "envertech_local"
+_PKG = Path(__file__).resolve().parents[1] / "custom_components" / "envertech_inverter"
 
 
 def _install_ha_stubs() -> None:
@@ -60,14 +60,14 @@ def _make_coordinator() -> object:
     _install_ha_stubs()
 
     # Make relative imports (``from .panels import ...``) resolvable.
-    if "envertech_local" not in sys.modules:
-        pkg = types.ModuleType("envertech_local")
+    if "envertech_inverter" not in sys.modules:
+        pkg = types.ModuleType("envertech_inverter")
         pkg.__path__ = [str(_PKG)]  # mark as package
-        sys.modules["envertech_local"] = pkg
+        sys.modules["envertech_inverter"] = pkg
     panels = load("panels")
-    sys.modules.setdefault("envertech_local.panels", panels)
+    sys.modules.setdefault("envertech_inverter.panels", panels)
 
-    name = "envertech_local.coordinator"
+    name = "envertech_inverter.coordinator"
     cached = sys.modules.get(name)
     if cached is None or not hasattr(cached, "InverterSocketCoordinator"):
         # (Re)load the module so it is fully initialised.

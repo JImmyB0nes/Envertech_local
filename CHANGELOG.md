@@ -4,6 +4,24 @@ All notable changes to this project are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-11-24
+
+### Changed
+
+- **Integration domain renamed from `envertech_local` to `envertech_inverter`.** The
+  `envertech_local` domain is already used by another integration in the HACS catalog
+  ([SyntaxSorcerer7/envertech-local](https://github.com/SyntaxSorcerer7/envertech-local)).
+  Home Assistant allows only one integration per domain; two of them installed side by side
+  break the config entries of whichever loads second.
+- Folder, `DOMAIN`, manifest `domain`/`loggers`, translations, coordinator logger names and
+  README links updated accordingly.
+
+### Action required
+
+- Existing installations must re-add the integration after updating: remove the old entry,
+  update to 1.4.0, restart Home Assistant, and configure it again via the config flow.
+  See the note in the README.
+
 ## [1.3.10] - 2026-11-19
 
 ### Fixed

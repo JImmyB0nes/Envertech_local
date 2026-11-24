@@ -1,6 +1,6 @@
 """Constants for the Envertech Local integration."""
 
-DOMAIN = "envertech_local"
+DOMAIN = "envertech_inverter"
 MANUFACTURER = "JimmyBones"
 # Display name of the integration in the HA UI / HACS (manifest.json "name").
 INTEGRATION_NAME = "Envertech Local"

@@ -7,12 +7,12 @@ import sys
 from pathlib import Path
 from types import ModuleType
 
-_PKG = Path(__file__).resolve().parents[1] / "custom_components" / "envertech_local"
+_PKG = Path(__file__).resolve().parents[1] / "custom_components" / "envertech_inverter"
 
 
 def load(name: str) -> ModuleType:
-    """Load ``custom_components/envertech_local/<name>.py`` standalone."""
-    module_name = f"envertech_local_standalone_{name}"
+    """Load ``custom_components/envertech_inverter/<name>.py`` standalone."""
+    module_name = f"envertech_inverter_standalone_{name}"
     if module_name in sys.modules:
         return sys.modules[module_name]
     spec = importlib.util.spec_from_file_location(module_name, _PKG / f"{name}.py")

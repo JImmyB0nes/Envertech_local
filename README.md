@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="custom_components/envertech_local/brand/icon.png" alt="Envertech Local icon" width="128">
+  <img src="custom_components/envertech_inverter/brand/icon.png" alt="Envertech Local icon" width="128">
 </p>
 
 <h1 align="center">Envertech Local for Home Assistant</h1>
@@ -11,7 +11,7 @@
 <p align="center">
   <a href="https://github.com/hacs/integration"><img src="https://img.shields.io/badge/HACS-Custom-41BDF5.svg?logo=homeassistantcommunitystore&logoColor=white" alt="HACS Custom"></a>
   <a href="https://github.com/JImmyB0nes/Envertech_local/releases/latest"><img src="https://img.shields.io/github/v/release/JImmyB0nes/Envertech_local?sort=semver" alt="Latest release"></a>
-  <a href="https://github.com/JImmyB0nes/Envertech_local/releases/latest/download/envertech_local.zip"><img src="https://img.shields.io/github/downloads/JImmyB0nes/Envertech_local/total?color=green" alt="Downloads"></a>
+  <a href="https://github.com/JImmyB0nes/Envertech_local/releases/latest/download/envertech_inverter.zip"><img src="https://img.shields.io/github/downloads/JImmyB0nes/Envertech_local/total?color=green" alt="Downloads"></a>
   <a href="https://git.jimmybones.de/jimmybones/Envertech_local"><img src="https://img.shields.io/badge/mirror-forgejo-blue?logo=forgejo" alt="Forgejo mirror"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/JImmyB0nes/Envertech_local" alt="License: MIT"></a>
 </p>
@@ -25,7 +25,18 @@
   <a href="#%EF%B8%8F-troubleshooting">Troubleshooting</a>
 </p>
 
-> **Envertech Local** (integration domain `envertech_local`) reads live data straight from your Envertech inverter/gateway on your local network. You don't need a cloud account, and nothing leaves your LAN.
+> **Envertech Local** (integration domain `envertech_inverter`) reads live data straight from your Envertech inverter/gateway on your local network. You don't need a cloud account, and nothing leaves your LAN.
+
+> [!IMPORTANT]
+> **Domain rename in 1.4.0:** The integration domain changed from `envertech_local` to
+> `envertech_inverter`, because `envertech_local` is already used by another integration in
+> the HACS catalog ([SyntaxSorcerer7/envertech-local](https://github.com/SyntaxSorcerer7/envertech-local)).
+> Two integrations sharing one domain cannot be installed side by side.
+> **After updating, existing setups need to be re-added:** remove the old Envertech Local
+> integration entry (this also removes its entities), update the integration, restart Home
+> Assistant, and set the integration up again via the config flow. Energy history is kept
+> per device where possible, but sensor entities get new unique ids, so you may need to
+> re-add them to the Energy Dashboard.
 
 This fork is maintained by [JimmyBones](https://github.com/JImmyB0nes). It is based on [Kaiserdragon2/Envertech_local](https://github.com/Kaiserdragon2/Envertech_local).
 
@@ -57,7 +68,7 @@ The HACS default listing still points to the old `jimmybonesde/Envertech_local` 
 ### Manual
 
 1. Download the [latest release](https://github.com/JImmyB0nes/Envertech_local/releases/latest).
-2. Copy `custom_components/envertech_local` into `<config>/custom_components/` of your Home Assistant installation.
+2. Copy `custom_components/envertech_inverter` into `<config>/custom_components/` of your Home Assistant installation.
 3. **Restart** Home Assistant.
 
 Requires Home Assistant **2024.6.0** or newer.
@@ -66,7 +77,7 @@ Requires Home Assistant **2024.6.0** or newer.
 
 The integration is set up entirely in the UI through a config flow:
 
-[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=envertech_local)
+[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=envertech_inverter)
 
 1. Go to **Settings → Devices & services → Add integration** and choose **Envertech Local**.
 2. **Discovery:** the integration spends about 5 seconds searching your network for inverters. It sends UDP broadcasts on ports `48889` (Ethernet/LOCALCON) and `48899` (Wi-Fi) from every network adapter enabled under **Settings → System → Network**. Every inverter it finds is listed as `IP — serial number`, except those already set up.
@@ -212,8 +223,8 @@ Add this to `configuration.yaml` and restart:
 logger:
   default: info
   logs:
-    custom_components.envertech_local: debug
-    envertech_local: debug
+    custom_components.envertech_inverter: debug
+    envertech_inverter: debug
 ```
 
 You can also use **Settings → Devices & services → Envertech Local → ⋮ → Enable debug logging**, reproduce the problem and then disable it again to download the log.

@@ -1,5 +1,5 @@
 {
-  "domain": "envertech_local",
+  "domain": "envertech_inverter",
   "name": "Envertech Local",
   "codeowners": ["@JImmyB0nes"],
   "config_flow": true,
@@ -8,7 +8,7 @@
   "integration_type": "device",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/JImmyB0nes/Envertech_local/issues",
-  "loggers": ["custom_components.envertech_local", "envertech_local"],
+  "loggers": ["custom_components.envertech_inverter", "envertech_inverter"],
   "requirements": [],
-  "version": "1.3.10"
+  "version": "1.4.0"
 }

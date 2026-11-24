@@ -36,7 +36,7 @@ class InverterSocketCoordinator(DataUpdateCoordinator[dict]):
         super().__init__(
             hass,
             _LOGGER,
-            name=f"envertech_local_{sn}",
+            name=f"envertech_inverter_{sn}",
             update_interval=None,
         )
         self.ip = ip
@@ -73,7 +73,7 @@ class InverterSocketCoordinator(DataUpdateCoordinator[dict]):
         self._stream_task = entry.async_create_background_task(
             self.hass,
             self._async_run(),
-            f"envertech_local_stream_{self.sn}",
+            f"envertech_inverter_stream_{self.sn}",
         )
 
     @callback
@@ -92,7 +92,7 @@ class InverterSocketCoordinator(DataUpdateCoordinator[dict]):
             self._stream_task = entry.async_create_background_task(
                 self.hass,
                 self._async_run(),
-                f"envertech_local_stream_{self.sn}",
+                f"envertech_inverter_stream_{self.sn}",
             )
 
     async def async_shutdown(self) -> None:

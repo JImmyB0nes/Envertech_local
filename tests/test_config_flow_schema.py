@@ -101,9 +101,9 @@ def _load_config_flow(monkeypatch: pytest.MonkeyPatch, devices: list[dict]):
     from pathlib import Path
 
     pkg_dir = (
-        Path(__file__).resolve().parents[1] / "custom_components" / "envertech_local"
+        Path(__file__).resolve().parents[1] / "custom_components" / "envertech_inverter"
     )
-    pkg_name = "envertech_local_flowtest"
+    pkg_name = "envertech_inverter_flowtest"
     pkg = types.ModuleType(pkg_name)
     pkg.__path__ = [str(pkg_dir)]  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, pkg_name, pkg)

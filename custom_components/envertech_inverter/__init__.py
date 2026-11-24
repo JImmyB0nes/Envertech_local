@@ -26,7 +26,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Envertech Local from a config entry."""
-    _LOGGER.debug("Setting up envertech_local entry %s", entry.entry_id)
+    _LOGGER.debug("Setting up envertech_inverter entry %s", entry.entry_id)
 
     ip = entry.data[CONF_IP_ADDRESS]
     sn = entry.data[CONF_UNIQUE_ID]
